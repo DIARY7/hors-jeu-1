@@ -67,11 +67,14 @@ public class Terrain {
     public List<Joueur> listeJoueurOffSide(){ /* Hors Jeu */
         List<Joueur> joueursOffSide = new ArrayList<>();
         Joueur avantDernierDefenseur = new Joueur();
+        double rayon;
         if (versBas) {
             avantDernierDefenseur = this.defenseur.getJoueurs().get(this.defenseur.getJoueurs().size() - 2);
+            rayon = avantDernierDefenseur.getRayon();
         }
         else{
             avantDernierDefenseur = this.defenseur.getJoueurs().get(1);
+            rayon = -1*avantDernierDefenseur.getRayon();
         }
         for (int i = 0; i < this.attaquant.getJoueurs().size() ; i++) {
             Joueur attaquant = this.attaquant.getJoueurs().get(i); 
@@ -86,7 +89,7 @@ public class Terrain {
                 }
             } 
         }
-        this.traitement.putLinSideOff(avantDernierDefenseur.getPosition());
+        this.traitement.putLinSideOff(avantDernierDefenseur.getPosition(),rayon);
         return joueursOffSide;
     }
 

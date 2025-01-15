@@ -32,7 +32,7 @@ public class UploadFile extends Application {
         primaryStage.setTitle("Analyseur de Fichiers");
 
         // Titre de bienvenue
-        Label welcomeLabel = new Label("VAR");
+        Label welcomeLabel = new Label("♥ VAR KAMI♥");
         welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         
         // Message d'instruction

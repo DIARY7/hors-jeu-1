@@ -247,14 +247,14 @@ public class TraitementImage {
         System.out.println("Image annotée sauvegardée à : " + outputImagePath);
     }
 
-    public void putLinSideOff(Point point) {
+    public void putLinSideOff(Point point,double rayon) {
         if (point != null) {
             // Récupérer la largeur de l'image
             int imageWidth = image.width();
     
             // Déterminer les points de début et de fin de la ligne
-            Point startPoint = new Point(0, point.y);
-            Point endPoint = new Point(imageWidth, point.y);
+            Point startPoint = new Point(0, point.y+rayon);
+            Point endPoint = new Point(imageWidth, point.y + rayon);
     
             // Tracer une ligne horizontale jaune
             Imgproc.line(
@@ -266,7 +266,7 @@ public class TraitementImage {
             );
     
             // Sauvegarder l'image résultante
-            String outputImagePath = "images/result_with_line.jpg";
+            String outputImagePath = "images/result.jpg";
             Imgcodecs.imwrite(outputImagePath, image);
             System.out.println("Ligne tracée et image sauvegardée à : " + outputImagePath);
         } else {
