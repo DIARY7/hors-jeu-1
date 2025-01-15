@@ -79,12 +79,12 @@ public class Terrain {
         for (int i = 0; i < this.attaquant.getJoueurs().size() ; i++) {
             Joueur attaquant = this.attaquant.getJoueurs().get(i); 
             if (versBas) {
-                if ( attaquant.getPosition().y + attaquant.getRayon() > (avantDernierDefenseur.getPosition().y + avantDernierDefenseur.getRayon())) {
+                if ( attaquant.getPosition().y + attaquant.getRayon() > (avantDernierDefenseur.getPosition().y + avantDernierDefenseur.getRayon()) &&  avantDernierDefenseur.getPosition().y > this.balon.getPosition().y ) {
                     joueursOffSide.add(attaquant);
                 }
             }
             else{
-                if (attaquant.getPosition().y - attaquant.getRayon() < (avantDernierDefenseur.getPosition().y - avantDernierDefenseur.getRayon())) {
+                if (attaquant.getPosition().y - attaquant.getRayon() < (avantDernierDefenseur.getPosition().y - avantDernierDefenseur.getRayon()) &&  avantDernierDefenseur.getPosition().y - avantDernierDefenseur.getRayon() < this.balon.getPosition().y ) {
                     joueursOffSide.add(attaquant);
                 }
             } 
@@ -105,15 +105,15 @@ public class Terrain {
         for (int i = 0; i < this.attaquant.getJoueurs().size() ; i++) {
             Joueur attaquant = this.attaquant.getJoueurs().get(i); 
             if (versBas) {
-                if (attaquant.getPosition().y > this.balon.getPosition().y) {
-                    if ( attaquant.getPosition().y + attaquant.getRayon() < (avantDernierDefenseur.getPosition().y + avantDernierDefenseur.getRayon())) {
+                if (attaquant.getPosition().y > this.balon.getPosition().y ) {
+                    if ( attaquant.getPosition().y + attaquant.getRayon() < (avantDernierDefenseur.getPosition().y + avantDernierDefenseur.getRayon()) || avantDernierDefenseur.getPosition().y < this.balon.getPosition().y ) {
                         joueursNoOffSide.add(attaquant);
                     }
                 }
             }
             else{
                 if (attaquant.getPosition().y < this.balon.getPosition().y) {
-                    if ( attaquant.getPosition().y - attaquant.getRayon() > (avantDernierDefenseur.getPosition().y - avantDernierDefenseur.getRayon())) {
+                    if ( attaquant.getPosition().y - attaquant.getRayon() > (avantDernierDefenseur.getPosition().y - avantDernierDefenseur.getRayon()) || avantDernierDefenseur.getPosition().y > this.balon.getPosition().y   ) {
                         joueursNoOffSide.add(attaquant);
                     }
                 }

@@ -20,7 +20,7 @@ public class DetailHorsJeu {
     public DetailHorsJeu(String nomFile,InfoDetails infoDetails) {
         Stage primaryStage = new Stage();
         // Titre
-        Label titleLabel = new Label("Analyse d'Hors Jeu");
+        Label titleLabel = new Label("🕵️‍♀️ Analyse d'Hors Jeu ⚽");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24)); // Police en gras, taille 24
         titleLabel.setTextFill(Color.WHITE);
         titleLabel.setStyle("-fx-alignment: center; -fx-padding: 20px; -fx-font-size:20px ; -fx-font-weight:bold ; -fx-margin-top:5px;");
