@@ -1,0 +1,37 @@
+.root {
+    -fx-font-family: 'Arial';
+    -fx-base: #2E3B4E;
+    -fx-background-color: #1A1A1A;
+    -fx-padding: 20;
+}
+
+.hbox {
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.vbox {
+    -fx-spacing: 10;
+}
+
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-text-alignment: center;
+}
+
+.label.title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #F5A623;
+    -fx-text-fill: white;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #F29C11;
+}
