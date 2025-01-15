@@ -25,6 +25,7 @@ public class Terrain {
 
     TraitementImage traitement;
 
+
     public Terrain() {
            
     }
@@ -85,6 +86,7 @@ public class Terrain {
                 }
             } 
         }
+        this.traitement.putLinSideOff(avantDernierDefenseur.getPosition());
         return joueursOffSide;
     }
 
