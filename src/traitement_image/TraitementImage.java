@@ -200,20 +200,35 @@ public class TraitementImage {
     }
         
     /*----------------------- Apres ------------------------- */
-    public void putPlayersNotOff(List<Joueur> joueurs) {
+    public void putPlayersNotOff(List<Joueur> joueurs,Ballon ballon) {
         for (Joueur joueur : joueurs) {
             Point position = joueur.getPosition();
             if (position != null) {
                 // Afficher la lettre "H" à côté de la position du joueur
+
                 Imgproc.putText(
                     image,                               // Image sur laquelle écrire
-                    "M",                                 // Texte à afficher
+                    "N",                                 // Texte à afficher
                     new Point(position.x + 10, position.y), // Position légèrement décalée à droite du joueur
                     Imgproc.FONT_HERSHEY_SIMPLEX,        // Police du texte
                     1.75,                                 // Taille du texte
-                    new Scalar(220, 109, 16),               // Couleur du texte (vert)
+                    new Scalar(150, 0, 200),               // Couleur du texte (vert)
                     3                                   // Épaisseur du texte
                 );
+                /* Alea */
+
+                // Déterminer les points de début et de fin de la ligne
+            Point startPoint = new Point(ballon.getPosition().x , ballon.getPosition().y);
+            Point endPoint = new Point(position.x, position.y);
+    
+            // Tracer une ligne horizontale jaune
+            Imgproc.arrowedLine(
+                image,                     // Image sur laquelle dessiner
+                startPoint,                // Point de départ
+                endPoint,                  // Point de fin
+                new Scalar(125, 0, 125),   // Couleur (jaune en BGR)
+                3                          // Épaisseur de la ligne
+            );
             }
         }
     
@@ -273,5 +288,32 @@ public class TraitementImage {
             System.out.println("Le point spécifié est nul. Aucune ligne tracée.");
         }
     }
+
+    // public void putDirection(Ball point,double rayon) {
+    //     if (point != null) {
+    //         // Récupérer la largeur de l'image
+    //         int imageWidth = image.width();
+    
+    //         // Déterminer les points de début et de fin de la ligne
+    //         Point startPoint = new Point(0, point.y+rayon);
+    //         Point endPoint = new Point(imageWidth, point.y + rayon);
+    
+    //         // Tracer une ligne horizontale jaune
+    //         Imgproc.line(
+    //             image,                     // Image sur laquelle dessiner
+    //             startPoint,                // Point de départ
+    //             endPoint,                  // Point de fin
+    //             new Scalar(0, 255, 255),   // Couleur (jaune en BGR)
+    //             2                          // Épaisseur de la ligne
+    //         );
+    
+    //         // Sauvegarder l'image résultante
+    //         String outputImagePath = "images/result.jpg";
+    //         Imgcodecs.imwrite(outputImagePath, image);
+    //         System.out.println("Ligne tracée et image sauvegardée à : " + outputImagePath);
+    //     } else {
+    //         System.out.println("Le point spécifié est nul. Aucune ligne tracée.");
+    //     }
+    // }
 
 }

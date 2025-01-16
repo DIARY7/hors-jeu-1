@@ -11,22 +11,22 @@ public class App {
     public static void main(String[] args) {
         try {
             /* Atao any @ Listener Bouton Upload */
-            File imageFile = new File("images/jeu1.jpg");
-            Terrain terrain = new Terrain(imageFile);
-            List<Joueur> joueursOffSide = terrain.listeJoueurOffSide();
-            List<Joueur> joueursMety = terrain.listeJoueurNoOffSide();
-            System.out.println("La position y du ballon " + terrain.getBalon().getPosition().y);
-            System.out.println("Les joueurs off Side");
-            for (int i = 0; i < joueursOffSide.size(); i++) {
-                System.out.println("Position : "+joueursOffSide.get(i).getPosition().y);
-            }
-            System.out.println("\n\n");
-            System.out.println("Les joueurs Non Off Side");
-            for (int i = 0; i < joueursMety.size(); i++) {
-                System.out.println("Position : "+joueursMety.get(i).getPosition().y);
-            }
-            terrain.getTraitement().putPlayersOff(joueursOffSide);
-            terrain.getTraitement().putPlayersNotOff(joueursMety);
+            // File imageFile = new File("images/jeu1.jpg");
+            // Terrain terrain = new Terrain(imageFile);
+            // List<Joueur> joueursOffSide = terrain.listeJoueurOffSide();
+            // List<Joueur> joueursMety = terrain.listeJoueurNoOffSide();
+            // System.out.println("La position y du ballon " + terrain.getBalon().getPosition().y);
+            // System.out.println("Les joueurs off Side");
+            // for (int i = 0; i < joueursOffSide.size(); i++) {
+            //     System.out.println("Position : "+joueursOffSide.get(i).getPosition().y);
+            // }
+            // System.out.println("\n\n");
+            // System.out.println("Les joueurs Non Off Side");
+            // for (int i = 0; i < joueursMety.size(); i++) {
+            //     System.out.println("Position : "+joueursMety.get(i).getPosition().y);
+            // }
+            // terrain.getTraitement().putPlayersOff(joueursOffSide);
+            // terrain.getTraitement().putPlayersNotOff(joueursMety);
 
             // TraitementImage traitement = new TraitementImage(imageFile);        
             // List<Joueur> listePointsReds = traitement.detectRedPoints();

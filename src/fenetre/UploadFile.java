@@ -117,7 +117,8 @@ public class UploadFile extends Application {
                 List<Joueur> joueursOffSide = terrain.listeJoueurOffSide();
                 List<Joueur> joueursMety = terrain.listeJoueurNoOffSide();
                 
-                terrain.getTraitement().putPlayersNotOff(joueursMety);
+
+                terrain.getTraitement().putPlayersNotOff(joueursMety,terrain.getBalon());
                 terrain.getTraitement().putPlayersOff(joueursOffSide);
 
                 InfoDetails infoDetails = new InfoDetails( terrain.getAttaquant().getNomEquipe() , joueursOffSide.size(), joueursMety.size());
