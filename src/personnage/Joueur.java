@@ -6,6 +6,7 @@ public class Joueur {
     Point position;
     int id_equipe; /* 0 si c'est rouge , 1 si c'est bleu */
     double rayon;
+    boolean isHorsJeu = false;
 
     public Joueur(Point position, int id_equipe,double rayon) {
         this.position = position;
@@ -38,6 +39,13 @@ public class Joueur {
 
     public void setId_equipe(int id_equipe) {
         this.id_equipe = id_equipe;
+    }
+    public boolean isHorsJeu() {
+        return isHorsJeu;
+    }
+
+    public void setHorsJeu(boolean isHorsJeu) {
+        this.isHorsJeu = isHorsJeu;
     }
     
 }

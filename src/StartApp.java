@@ -1,4 +1,3 @@
-import fenetre.DetailHorsJeu;
 import fenetre.UploadFile;
 import javafx.application.Application;
 import javafx.stage.Stage;

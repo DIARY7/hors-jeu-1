@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -16,6 +18,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 import composant.Ballon;
+import composant.LineSegment;
 import personnage.Joueur;
 
 public class TraitementImage {
@@ -24,15 +27,19 @@ public class TraitementImage {
     
     Mat image;
     Mat hsvImage;
+    String nomFichier;
     
     public TraitementImage(File imageFile) throws Exception {
         // Charger l'image
-        image = Imgcodecs.imread(imageFile.getAbsolutePath());
+        Mat imageOriginal = Imgcodecs.imread(imageFile.getAbsolutePath());
 
-        if (image.empty()) {
+        if (imageOriginal.empty()) {
             throw new Exception("Erreur: Impossible de charger l'image.");
         }
-
+        this.nomFichier = imageFile.getName();
+        /* Mi-size an'ilay image */
+        this.image = new Mat();
+        Imgproc.resize( imageOriginal ,this.image, new Size(imageOriginal.width()*2, imageOriginal.height()*2 ), 0, 0, Imgproc.INTER_LINEAR);
         // Convertir l'image en espace HSV
         this.hsvImage = new Mat();
         Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_BGR2HSV);
@@ -84,9 +91,6 @@ public class TraitementImage {
                 System.out.println("Contour vide détecté et ignoré.");
             }
         }
-    
-        // Sauvegarder l'image avec les annotations
-        System.out.println("Liste des ");
     
         return joueursRed;
     }
@@ -178,7 +182,7 @@ public class TraitementImage {
                     // Vérification de la couleur du pixel à ce point
                     double[] pixel = image.get(y, x);
                     // Vérifier si le pixel est vraiment noir
-                    if (pixel != null && pixel[0] < 20 && pixel[1] < 20 && pixel[2] < 20) {
+                    if (pixel != null && pixel[0] < 18 && pixel[1] < 18 && pixel[2] < 18) {
                         listeBalons.add(new Ballon(new Point(x, y), 5));
                         // Calculer le rayon du cercle détecté
                         int radius = 5; // Défini ici le rayon utilisé dans Imgproc.circle()
@@ -191,12 +195,115 @@ public class TraitementImage {
         }
     
         // Sauvegarder l'image résultante avec les annotations
-        String outputImagePath = "images/result.jpg";
+        String outputImagePath = "images/result-"+ this.nomFichier+"-.jpg";
         Imgcodecs.imwrite(outputImagePath, image);
-        System.out.println("Image annotée sauvegardée à : " + outputImagePath);
+       
     
         // Retourner les points noirs détectés et les rayons associés
         return listeBalons;
+    }
+
+    /* LES CAGES  */
+    public List<LineSegment> detectCages() {
+        // Étape 1 : Conversion en niveaux de gris
+        Mat gray = new Mat();
+        Imgproc.cvtColor(image, gray, Imgproc.COLOR_BGR2GRAY);
+    
+        // Étape 2 : Appliquer un filtre gaussien pour réduire le bruit
+        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
+    
+        // Étape 3 : Accentuer le contraste
+        Mat enhancedGray = new Mat();
+        Imgproc.equalizeHist(gray, enhancedGray);
+    
+        // Étape 4 : Renforcer les noirs avec une binarisation stricte
+        Mat binary = new Mat();
+        Imgproc.threshold(enhancedGray, binary, 30, 255, Imgproc.THRESH_BINARY_INV);
+    
+        // Étape 5 : Nettoyer les petits bruits
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
+        Imgproc.morphologyEx(binary, binary, Imgproc.MORPH_CLOSE, kernel);
+    
+        // Étape 6 : Supprimer les noirs peu denses
+        Mat mask = new Mat();
+        Imgproc.erode(binary, mask, kernel, new Point(-1, -1), 2);
+    
+        // Étape 7 : Détection des contours
+        Mat edges = new Mat();
+        Imgproc.Canny(mask, edges, 100, 200);
+    
+        // Étape 8 : Détection des lignes avec HoughLinesP
+        Mat lines = new Mat();
+        Imgproc.HoughLinesP(edges, lines, 1, Math.PI / 180, 50, 50, 10);
+    
+        // Liste pour stocker les lignes filtrées
+        List<LineSegment> filteredLines = new ArrayList<>();
+    
+        // Seuils pour filtrer les lignes
+        int minLength = 100;
+        double minBlackness = 0.7;
+        double maxVerticalDeviation = 5.0; // Seuil pour considérer une ligne comme horizontale (différence maximale entre y1 et y2)
+    
+        for (int i = 0; i < lines.rows(); i++) {
+            double[] line = lines.get(i, 0);
+            int x1 = (int) line[0];
+            int y1 = (int) line[1];
+            int x2 = (int) line[2];
+            int y2 = (int) line[3];
+    
+            // Assurer que x1 est toujours à gauche
+            if (x1 > x2) {
+                int tempX = x1, tempY = y1;
+                x1 = x2; y1 = y2;
+                x2 = tempX; y2 = tempY;
+            }
+    
+            // Vérifier si la ligne est horizontale
+            if (Math.abs(y2 - y1) > maxVerticalDeviation) {
+                continue; // Ignorer les lignes non horizontales
+            }
+    
+            // Calcul de la longueur de la ligne
+            double length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            if (length < minLength) {
+                continue; // Ignorer les lignes trop courtes
+            }
+    
+            // Vérification de la densité des noirs sur la ligne
+            if (!isLineBlackEnough(binary, x1, y1, x2, y2, minBlackness)) {
+                continue; // Ignorer les lignes peu noires
+            }
+    
+            // Ajouter la ligne filtrée
+            filteredLines.add(new LineSegment(new Point(x1, y1), new Point(x2, y2)));
+    
+            // Optionnel : Dessiner les lignes sur l'image
+            //Imgproc.line(image, new Point(x1, y1), new Point(x2, y2), new Scalar(0, 255, 0), 2);
+        }
+    
+        // Sauvegarder l'image avec les lignes importantes détectées
+        // Imgcodecs.imwrite("horizontal_lines_detected.jpg", image);
+        return filteredLines;
+    }
+    
+    /**
+     * Vérifie si une ligne est suffisamment noire.
+     */
+    private boolean isLineBlackEnough(Mat binary, int x1, int y1, int x2, int y2, double minBlackness) {
+        Mat tempMask = Mat.zeros(binary.size(), CvType.CV_8UC1);
+        Imgproc.line(tempMask, new Point(x1, y1), new Point(x2, y2), new Scalar(255), 1);
+        Core.bitwise_and(binary, tempMask, tempMask);
+        int totalBlackPixels = Core.countNonZero(tempMask);
+    
+        double lineLength = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        double blacknessRatio = totalBlackPixels / lineLength;
+    
+        return blacknessRatio >= minBlackness;
+    }
+
+    public void drawLine(LineSegment line){
+        Imgproc.line(image, line.getStart(), line.getEnd(), new Scalar(0, 255, 0), 2);
+        Imgcodecs.imwrite("line_ray.jpg", image);
     }
         
     /*----------------------- Apres ------------------------- */
@@ -211,7 +318,7 @@ public class TraitementImage {
                     "N",                                 // Texte à afficher
                     new Point(position.x + 10, position.y), // Position légèrement décalée à droite du joueur
                     Imgproc.FONT_HERSHEY_SIMPLEX,        // Police du texte
-                    1.75,                                 // Taille du texte
+                    2.75,                                 // Taille du texte
                     new Scalar(150, 0, 200),               // Couleur du texte (vert)
                     3                                   // Épaisseur du texte
                 );
@@ -233,9 +340,9 @@ public class TraitementImage {
         }
     
         // Sauvegarder l'image annotée
-        String outputImagePath = "images/result.jpg";
+        String outputImagePath = "images/result-"+ this.nomFichier+"-.jpg";
         Imgcodecs.imwrite(outputImagePath, image);
-        System.out.println("Image annotée sauvegardée à : " + outputImagePath);
+
     }
     
 
@@ -249,7 +356,7 @@ public class TraitementImage {
                     "H",                                 // Texte à afficher
                     new Point(position.x + 10, position.y), // Position légèrement décalée à droite du joueur
                     Imgproc.FONT_HERSHEY_SIMPLEX,        // Police du texte
-                    1.75,                                 // Taille du texte
+                    3.75,                                 // Taille du texte
                     new Scalar(214, 78, 210),               // Couleur du texte (vert)
                     3                                   // Épaisseur du texte
                 );
@@ -257,9 +364,9 @@ public class TraitementImage {
         }
     
         // Sauvegarder l'image annotée
-        String outputImagePath = "images/result.jpg";
+        String outputImagePath = "images/result-"+ this.nomFichier+"-.jpg";
         Imgcodecs.imwrite(outputImagePath, image);
-        System.out.println("Image annotée sauvegardée à : " + outputImagePath);
+       
     }
 
     public void putLinSideOff(Point point,double rayon) {
@@ -281,39 +388,13 @@ public class TraitementImage {
             );
     
             // Sauvegarder l'image résultante
-            String outputImagePath = "images/result.jpg";
+            String outputImagePath = "images/result-"+ this.nomFichier+"-.jpg";
             Imgcodecs.imwrite(outputImagePath, image);
-            System.out.println("Ligne tracée et image sauvegardée à : " + outputImagePath);
+            
         } else {
             System.out.println("Le point spécifié est nul. Aucune ligne tracée.");
         }
     }
 
-    // public void putDirection(Ball point,double rayon) {
-    //     if (point != null) {
-    //         // Récupérer la largeur de l'image
-    //         int imageWidth = image.width();
-    
-    //         // Déterminer les points de début et de fin de la ligne
-    //         Point startPoint = new Point(0, point.y+rayon);
-    //         Point endPoint = new Point(imageWidth, point.y + rayon);
-    
-    //         // Tracer une ligne horizontale jaune
-    //         Imgproc.line(
-    //             image,                     // Image sur laquelle dessiner
-    //             startPoint,                // Point de départ
-    //             endPoint,                  // Point de fin
-    //             new Scalar(0, 255, 255),   // Couleur (jaune en BGR)
-    //             2                          // Épaisseur de la ligne
-    //         );
-    
-    //         // Sauvegarder l'image résultante
-    //         String outputImagePath = "images/result.jpg";
-    //         Imgcodecs.imwrite(outputImagePath, image);
-    //         System.out.println("Ligne tracée et image sauvegardée à : " + outputImagePath);
-    //     } else {
-    //         System.out.println("Le point spécifié est nul. Aucune ligne tracée.");
-    //     }
-    // }
 
 }
