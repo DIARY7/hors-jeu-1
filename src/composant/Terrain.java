@@ -78,6 +78,7 @@ public class Terrain {
         Joueur[] proche2 = new Joueur[1]; // Tableau mutable
         double distance1 = checkJoueurNearBallon(this.equipe1,proche1);
         double distance2 = checkJoueurNearBallon(this.equipe2,proche2);
+        
         if (distance1 < distance2 ) {
             this.attaquant = this.equipe1;
             this.defenseur = this.equipe2;

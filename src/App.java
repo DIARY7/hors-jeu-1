@@ -16,7 +16,7 @@ public class App {
         /* Atambatra ho ligne iray izay même x ( ka longueur width mitovy @ width de ligne même y) */
         try {
             
-            Terrain terrain = new Terrain(new File("images/Match/1-avant-tir.jpg"));
+            Terrain terrain = new Terrain(new File("images/sarrr22.jpg"));
             List<LineSegment> lineSegment = terrain.getTraitement().detectCages();
             lineSegment =  Outil.TrieLineSegmentByY(lineSegment);
             // System.out.println("La liste des lineSegment sont au nombre de "+lineSegment.size());
