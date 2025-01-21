@@ -87,6 +87,26 @@ public class Equipe {
             System.err.println("Erreur lors de l'insertion dans la table score.");
         }
     }
+
+    public void addArret(Connection con,int idMatch) throws Exception{
+        if (con==null) {
+            ConnectionPost conPost = new ConnectionPost();
+            con = conPost.getConnection();
+        }
+        String sql = "INSERT INTO arret (id_equipe, nb_arret , id_match) VALUES (?, 1, ?)";
+        try {
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, this.idEquipe); // Remplacez le premier `?`
+            preparedStatement.setInt(2, idMatch); // Remplacez le deuxième `?`
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Erreur lors de l'insertion dans la table score.");
+        }
+    }
+
+
     public int getPoint(Connection con,int id_match) throws Exception {
         if (con==null) {
             ConnectionPost conPost = new ConnectionPost();
@@ -127,6 +147,29 @@ public class Equipe {
         try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) { // Vérifie s'il y a un résultat
                 return rs.getInt("score"); // Retourne la colonne "score"
+
+            } else {
+                return 0;
+            }
+        }
+
+    }
+
+    public static int getArret(Connection con,int idEquipe,int id_match ) throws Exception {
+        if (con==null) {
+            ConnectionPost conPost = new ConnectionPost();
+            con = conPost.getConnection();
+        }
+
+        String sql ="SELECT id_equipe , SUM(nb_arret) as arret FROM arret WHERE id_match = ? "+ 
+        " GROUP BY id_equipe having id_equipe = ?";
+        PreparedStatement pstmt = con.prepareStatement(sql);
+        pstmt.setInt(1, id_match);
+        pstmt.setInt( 2 ,idEquipe);
+        
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) { // Vérifie s'il y a un résultat
+                return rs.getInt("arret"); // Retourne la colonne "score"
 
             } else {
                 return 0;

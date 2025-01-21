@@ -78,7 +78,7 @@ public class Terrain {
         Joueur[] proche2 = new Joueur[1]; // Tableau mutable
         double distance1 = checkJoueurNearBallon(this.equipe1,proche1);
         double distance2 = checkJoueurNearBallon(this.equipe2,proche2);
-        
+
         if (distance1 < distance2 ) {
             this.attaquant = this.equipe1;
             this.defenseur = this.equipe2;
@@ -176,6 +176,11 @@ public class Terrain {
     
     public void setBut() throws Exception {
         boolean but = false;
+        boolean arret = this.isArret();
+        if (arret) {
+            this.defenseur.addArret(null, 1);
+            return;
+        }
         if (this.possesseur.isHorsJeu()) {
             return;
         }
@@ -189,6 +194,26 @@ public class Terrain {
             this.attaquant.addPoint(null,1);
             System.out.println("GOALLLLLLL");    
         }
+    }
+    public boolean isArret() throws Exception{
+        this.defenseur.TrieJoueursY();
+        if (versBas) {
+            Joueur goal = this.defenseur.getJoueurs().get(this.defenseur.getJoueurs().size()-1);
+            if ( (goal.getPosition().x - goal.getRayon()) < this.balon.getPosition().x &&  this.balon.getPosition().x < (goal.getPosition().x + goal.getRayon())  ) {
+                if ( goal.getPosition().y >  this.balon.getPosition().y && this.balon.getPosition().y > (goal.getPosition().y - (goal.getRayon()*2) ) ) {
+                    return true;                    
+                }               
+            }
+        }
+        else{
+            Joueur goal = this.defenseur.getJoueurs().get(0);
+            if ( (goal.getPosition().x - goal.getRayon()) < this.balon.getPosition().x &&  this.balon.getPosition().x < (goal.getPosition().x + goal.getRayon())  ) {
+                if ( goal.getPosition().y <  this.balon.getPosition().y && this.balon.getPosition().y < (goal.getPosition().y + (goal.getRayon()*2) ) ) {
+                    return true;                    
+                }               
+            }
+        }
+        return false;
     }
 
     /* Fonction complementaire */

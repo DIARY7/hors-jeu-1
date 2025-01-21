@@ -19,6 +19,14 @@ CREATE TABLE score(
     FOREIGN KEY(id_match) REFERENCES match(id)
 );
 
+CREATE TABLE arret(
+    id_equipe INTEGER,
+    nb_arret INTEGER, 
+    id_match INTEGER,
+    FOREIGN KEY(id_equipe) REFERENCES equipe(id),
+    FOREIGN KEY(id_match) REFERENCES match(id)
+);
+
 INSERT INTO equipe (id,nom) VALUES (1,'Rouge');
 INSERT INTO equipe (id,nom) VALUES (2,'Bleu');
 
